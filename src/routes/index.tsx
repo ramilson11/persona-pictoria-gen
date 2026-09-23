@@ -55,6 +55,8 @@ type ViewState = "placeholder" | "loading" | "image";
 type Pic = { file: File; url: string };
 
 const HISTORY_KEY = "invente-ia-history";
+const HF_TOKEN_KEY = "invente-ia-hf-token";
+const HF_MODEL_KEY = "invente-ia-hf-model";
 
 const appearanceOptions: ChipOption<AppearanceId | "none">[] = [
   { id: "none", label: "Nenhuma", hint: "Sem estilo definido" },
@@ -93,6 +95,14 @@ function Studio() {
   const [quality, setQuality] = useState<QualityId>("auto");
   const [framing, setFraming] = useState<FramingId>("none");
 
+  const [hfOpen, setHfOpen] = useState(false);
+  const [hfTokenInput, setHfTokenInput] = useState("");
+  const [hfModelInput, setHfModelInput] = useState("");
+  const [hfToken, setHfToken] = useState("");
+  const [hfModel, setHfModel] = useState("");
+  const [hfSaved, setHfSaved] = useState(false);
+  const [provider, setProvider] = useState<"padrao" | "hf">("padrao");
+
   const [additionalsOpen, setAdditionalsOpen] = useState(false);
   const [characterOpen, setCharacterOpen] = useState(false);
   const [characterRef, setCharacterRef] = useState<Pic | null>(null);
@@ -116,7 +126,55 @@ function Studio() {
     } catch {
       /* histórico indisponível */
     }
+    try {
+      const token = localStorage.getItem(HF_TOKEN_KEY) ?? "";
+      const model = localStorage.getItem(HF_MODEL_KEY) ?? "";
+      if (token) {
+        setHfToken(token);
+        setHfTokenInput(token);
+        setHfSaved(true);
+        setProvider("hf");
+      }
+      if (model) {
+        setHfModel(model);
+        setHfModelInput(model);
+      }
+    } catch {
+      /* armazenamento indisponível */
+    }
   }, []);
+
+  const saveHf = () => {
+    const token = hfTokenInput.trim();
+    const model = hfModelInput.trim();
+    setHfToken(token);
+    setHfModel(model);
+    setHfSaved(Boolean(token));
+    try {
+      if (token) localStorage.setItem(HF_TOKEN_KEY, token);
+      else localStorage.removeItem(HF_TOKEN_KEY);
+      if (model) localStorage.setItem(HF_MODEL_KEY, model);
+      else localStorage.removeItem(HF_MODEL_KEY);
+    } catch {
+      /* armazenamento indisponível */
+    }
+    if (token) setProvider("hf");
+  };
+
+  const clearHf = () => {
+    setHfTokenInput("");
+    setHfModelInput("");
+    setHfToken("");
+    setHfModel("");
+    setHfSaved(false);
+    setProvider("padrao");
+    try {
+      localStorage.removeItem(HF_TOKEN_KEY);
+      localStorage.removeItem(HF_MODEL_KEY);
+    } catch {
+      /* armazenamento indisponível */
+    }
+  };
 
   const pushHistory = useCallback((url: string) => {
     setHistory((prev) => {
@@ -174,7 +232,24 @@ function Studio() {
           if (final) setViewState("image");
         };
 
-        if (reference) {
+        const useHf = provider === "hf" && Boolean(hfToken) && !reference;
+
+        if (useHf) {
+          const [w, h] = (size ?? "").split("x").map((n) => Number(n));
+          const res = await fetch("/api/hf-image", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prompt: finalPrompt,
+              token: hfToken,
+              ...(hfModel ? { model: hfModel } : {}),
+              ...(w && h ? { width: w, height: h } : {}),
+            }),
+          });
+          const data = (await res.json()) as { image?: string; error?: string };
+          if (!res.ok || !data.image) throw new Error(data.error ?? "Falha ao gerar no Hugging Face.");
+          onFrame(data.image, true);
+        } else if (reference) {
           const form = new FormData();
           form.append("prompt", finalPrompt);
           form.append("image", reference.file);
@@ -206,7 +281,21 @@ function Studio() {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [prompt, mode, sourceImage, characterRef, keepCharacter, appearance, aspect, resolution, quality, framing],
+    [
+      prompt,
+      mode,
+      sourceImage,
+      characterRef,
+      keepCharacter,
+      appearance,
+      aspect,
+      resolution,
+      quality,
+      framing,
+      provider,
+      hfToken,
+      hfModel,
+    ],
   );
 
   const download = (format: "png" | "jpeg" | "webp") => {
@@ -366,6 +455,69 @@ function Studio() {
             columns={2}
           />
         </Field>
+
+        {/* Hugging Face */}
+        <div className="rounded-xl border border-border bg-card">
+          <button
+            type="button"
+            onClick={() => setHfOpen((v) => !v)}
+            className="flex w-full cursor-pointer items-center justify-between px-3 py-3"
+          >
+            <span className="label-eyebrow">API Hugging Face</span>
+            <span className="flex items-center gap-2">
+              {hfSaved && <span className="text-[0.65rem] text-primary">salvo</span>}
+              <ChevronDown className={cn("size-4 transition-transform", hfOpen && "rotate-180")} />
+            </span>
+          </button>
+          {hfOpen && (
+            <div className="space-y-3 border-t border-border p-3">
+              <div className="space-y-2">
+                <span className="text-xs text-muted-foreground">Token de acesso — huggingface.co/settings/tokens</span>
+                <input
+                  type="password"
+                  value={hfTokenInput}
+                  onChange={(e) => setHfTokenInput(e.target.value)}
+                  placeholder="hf_..."
+                  autoComplete="off"
+                  className="w-full rounded-lg border border-input bg-panel p-2.5 text-sm outline-none placeholder:text-muted-foreground/70 focus:border-primary"
+                />
+              </div>
+              <div className="space-y-2">
+                <span className="text-xs text-muted-foreground">Modelo — Opcional</span>
+                <input
+                  type="text"
+                  value={hfModelInput}
+                  onChange={(e) => setHfModelInput(e.target.value)}
+                  placeholder="black-forest-labs/FLUX.1-schnell"
+                  className="w-full rounded-lg border border-input bg-panel p-2.5 text-sm outline-none placeholder:text-muted-foreground/70 focus:border-primary"
+                />
+              </div>
+              <div className="flex gap-1.5">
+                <button type="button" onClick={saveHf} className="chip cursor-pointer">
+                  Salvar
+                </button>
+                <button type="button" onClick={clearHf} className="chip cursor-pointer">
+                  <Trash2 className="size-3.5" /> Limpar
+                </button>
+              </div>
+              {hfSaved && (
+                <Field label="Gerar com">
+                  <Chips
+                    options={[
+                      { id: "padrao", label: "Padrão", hint: "Modelo interno" },
+                      { id: "hf", label: "Hugging Face", hint: "Usa seu token" },
+                    ]}
+                    value={provider}
+                    onChange={(v) => setProvider(v)}
+                  />
+                </Field>
+              )}
+              <p className="text-[0.68rem] leading-snug text-muted-foreground">
+                O token fica salvo apenas neste navegador. A edição de imagens continua usando o modelo padrão.
+              </p>
+            </div>
+          )}
+        </div>
 
         {/* Adicionais */}
         <div className="rounded-xl border border-border bg-card">
