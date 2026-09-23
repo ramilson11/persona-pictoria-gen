@@ -232,7 +232,24 @@ function Studio() {
           if (final) setViewState("image");
         };
 
-        if (reference) {
+        const useHf = provider === "hf" && Boolean(hfToken) && !reference;
+
+        if (useHf) {
+          const [w, h] = (size ?? "").split("x").map((n) => Number(n));
+          const res = await fetch("/api/hf-image", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prompt: finalPrompt,
+              token: hfToken,
+              ...(hfModel ? { model: hfModel } : {}),
+              ...(w && h ? { width: w, height: h } : {}),
+            }),
+          });
+          const data = (await res.json()) as { image?: string; error?: string };
+          if (!res.ok || !data.image) throw new Error(data.error ?? "Falha ao gerar no Hugging Face.");
+          onFrame(data.image, true);
+        } else if (reference) {
           const form = new FormData();
           form.append("prompt", finalPrompt);
           form.append("image", reference.file);
