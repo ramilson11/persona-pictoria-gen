@@ -126,7 +126,55 @@ function Studio() {
     } catch {
       /* histórico indisponível */
     }
+    try {
+      const token = localStorage.getItem(HF_TOKEN_KEY) ?? "";
+      const model = localStorage.getItem(HF_MODEL_KEY) ?? "";
+      if (token) {
+        setHfToken(token);
+        setHfTokenInput(token);
+        setHfSaved(true);
+        setProvider("hf");
+      }
+      if (model) {
+        setHfModel(model);
+        setHfModelInput(model);
+      }
+    } catch {
+      /* armazenamento indisponível */
+    }
   }, []);
+
+  const saveHf = () => {
+    const token = hfTokenInput.trim();
+    const model = hfModelInput.trim();
+    setHfToken(token);
+    setHfModel(model);
+    setHfSaved(Boolean(token));
+    try {
+      if (token) localStorage.setItem(HF_TOKEN_KEY, token);
+      else localStorage.removeItem(HF_TOKEN_KEY);
+      if (model) localStorage.setItem(HF_MODEL_KEY, model);
+      else localStorage.removeItem(HF_MODEL_KEY);
+    } catch {
+      /* armazenamento indisponível */
+    }
+    if (token) setProvider("hf");
+  };
+
+  const clearHf = () => {
+    setHfTokenInput("");
+    setHfModelInput("");
+    setHfToken("");
+    setHfModel("");
+    setHfSaved(false);
+    setProvider("padrao");
+    try {
+      localStorage.removeItem(HF_TOKEN_KEY);
+      localStorage.removeItem(HF_MODEL_KEY);
+    } catch {
+      /* armazenamento indisponível */
+    }
+  };
 
   const pushHistory = useCallback((url: string) => {
     setHistory((prev) => {
