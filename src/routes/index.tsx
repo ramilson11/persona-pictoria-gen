@@ -281,7 +281,21 @@ function Studio() {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [prompt, mode, sourceImage, characterRef, keepCharacter, appearance, aspect, resolution, quality, framing],
+    [
+      prompt,
+      mode,
+      sourceImage,
+      characterRef,
+      keepCharacter,
+      appearance,
+      aspect,
+      resolution,
+      quality,
+      framing,
+      provider,
+      hfToken,
+      hfModel,
+    ],
   );
 
   const download = (format: "png" | "jpeg" | "webp") => {
