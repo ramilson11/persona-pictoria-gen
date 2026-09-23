@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiEditImageRouteImport } from './routes/api/edit-image'
 import { Route as ApiGenerateImageRouteImport } from './routes/api/generate-image'
+import { Route as ApiHfImageRouteImport } from './routes/api/hf-image'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,49 @@ const ApiGenerateImageRoute = ApiGenerateImageRouteImport.update({
   path: '/api/generate-image',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiHfImageRoute = ApiHfImageRouteImport.update({
+  id: '/api/hf-image',
+  path: '/api/hf-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/edit-image': typeof ApiEditImageRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/hf-image': typeof ApiHfImageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/edit-image': typeof ApiEditImageRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/hf-image': typeof ApiHfImageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/edit-image': typeof ApiEditImageRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/hf-image': typeof ApiHfImageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/edit-image' | '/api/generate-image'
+  fullPaths: '/' | '/api/edit-image' | '/api/generate-image' | '/api/hf-image'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/edit-image' | '/api/generate-image'
-  id: '__root__' | '/' | '/api/edit-image' | '/api/generate-image'
+  to: '/' | '/api/edit-image' | '/api/generate-image' | '/api/hf-image'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/edit-image'
+    | '/api/generate-image'
+    | '/api/hf-image'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiEditImageRoute: typeof ApiEditImageRoute
   ApiGenerateImageRoute: typeof ApiGenerateImageRoute
+  ApiHfImageRoute: typeof ApiHfImageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +97,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiGenerateImageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/hf-image': {
+      id: '/api/hf-image'
+      path: '/api/hf-image'
+      fullPath: '/api/hf-image'
+      preLoaderRoute: typeof ApiHfImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +111,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiEditImageRoute: ApiEditImageRoute,
   ApiGenerateImageRoute: ApiGenerateImageRoute,
+  ApiHfImageRoute: ApiHfImageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

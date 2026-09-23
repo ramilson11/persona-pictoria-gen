@@ -55,6 +55,8 @@ type ViewState = "placeholder" | "loading" | "image";
 type Pic = { file: File; url: string };
 
 const HISTORY_KEY = "invente-ia-history";
+const HF_TOKEN_KEY = "invente-ia-hf-token";
+const HF_MODEL_KEY = "invente-ia-hf-model";
 
 const appearanceOptions: ChipOption<AppearanceId | "none">[] = [
   { id: "none", label: "Nenhuma", hint: "Sem estilo definido" },
