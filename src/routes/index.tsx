@@ -95,6 +95,14 @@ function Studio() {
   const [quality, setQuality] = useState<QualityId>("auto");
   const [framing, setFraming] = useState<FramingId>("none");
 
+  const [hfOpen, setHfOpen] = useState(false);
+  const [hfTokenInput, setHfTokenInput] = useState("");
+  const [hfModelInput, setHfModelInput] = useState("");
+  const [hfToken, setHfToken] = useState("");
+  const [hfModel, setHfModel] = useState("");
+  const [hfSaved, setHfSaved] = useState(false);
+  const [provider, setProvider] = useState<"padrao" | "hf">("padrao");
+
   const [additionalsOpen, setAdditionalsOpen] = useState(false);
   const [characterOpen, setCharacterOpen] = useState(false);
   const [characterRef, setCharacterRef] = useState<Pic | null>(null);
