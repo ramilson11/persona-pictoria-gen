@@ -29,8 +29,8 @@ export const Route = createFileRoute("/api/hf-image")({
         const model = (body.model ?? "").trim() || DEFAULT_MODEL;
         const parameters: Record<string, number> = {};
         if (body.width && body.height) {
-          parameters.width = body.width;
-          parameters.height = body.height;
+          parameters['width'] = body.width;
+          parameters['height'] = body.height;
         }
 
         const res = await fetch(`https://router.huggingface.co/hf-inference/models/${model}`, {
