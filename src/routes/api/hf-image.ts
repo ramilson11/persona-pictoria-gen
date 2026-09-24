@@ -8,7 +8,7 @@ type Body = {
   height?: number;
 };
 
-const DEFAULT_MODEL = "black-forest-labs/FLUX.1-schnell";
+const DEFAULT_MODEL = "stabilityai/stable-diffusion-xl-base-1.0";
 
 export const Route = createFileRoute("/api/hf-image")({
   server: {
