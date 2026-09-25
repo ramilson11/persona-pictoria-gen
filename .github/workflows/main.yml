@@ -34,20 +34,13 @@ jobs:
       - name: Build project
         run: bun run build
 
-      - name: Verify output directory
-        run: |
-          if [ -d "./dist" ]; then
-            echo "BUILD_PATH=./dist" >> $GITHUB_ENV
-          elif [ -d "./.output/public" ]; then
-            echo "BUILD_PATH=./.output/public" >> $GITHUB_ENV
-          else
-            echo "Nenhum diretório de build encontrado." && exit 1
-          fi
+      - name: Add .nojekyll file
+        run: touch .output/public/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ env.BUILD_PATH }}
+          path: .output/public
 
       - name: Deploy to GitHub Pages
         id: deployment
