@@ -34,13 +34,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Invente com IA — Estúdio de Imagens" },
+      { title: "ImaginaIA Criação de Imagens" },
       {
         name: "description",
         content:
           "Gere e edite imagens com IA: aparência, proporção, resolução, qualidade, enquadramento e personagem de referência.",
       },
-      { property: "og:title", content: "Invente com IA — Estúdio de Imagens" },
+      { property: "og:title", content: "ImaginaIA Criação de Imagens" },
       {
         property: "og:description",
         content: "Escreva sua ideia, escolha a aparência e crie imagens em segundos.",
@@ -355,7 +355,7 @@ function Studio() {
             <Sparkles className="size-5" />
           </span>
           <div>
-            <h1 className="text-lg leading-tight font-semibold">Invente com IA</h1>
+            <h1 className="text-lg leading-tight font-semibold">ImaginaIA</h1>
             <p className="text-xs text-muted-foreground">Estúdio de imagens</p>
           </div>
         </header>

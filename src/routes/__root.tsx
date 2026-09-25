@@ -77,10 +77,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Invente com IA — Estúdio de Imagens" },
+      { title: "ImaginaIA Criação de Imagens" },
       { name: "description", content: "Gerador de imagens com IA em português." },
-      { name: "author", content: "Invente com IA" },
-      { property: "og:title", content: "Invente com IA — Estúdio de Imagens" },
+      { name: "author", content: "ImaginaIA" },
+      { property: "og:title", content: "ImaginaIA Criação de Imagens" },
       { property: "og:description", content: "Gerador de imagens com IA em português." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
