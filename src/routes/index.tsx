@@ -356,7 +356,7 @@ function Studio() {
           </span>
           <div>
             <h1 className="text-lg leading-tight font-semibold">ImaginaIA</h1>
-            <p className="text-xs text-muted-foreground">Estúdio de imagens</p>
+            <p className="text-xs text-muted-foreground">Criação de imagens</p>
           </div>
         </header>
 
