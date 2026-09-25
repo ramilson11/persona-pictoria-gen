@@ -35,12 +35,12 @@ jobs:
         run: bun run build
 
       - name: Add .nojekyll file
-        run: touch .output/public/.nojekyll
+        run: touch ./dist/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .output/public
+          path: ./dist
 
       - name: Deploy to GitHub Pages
         id: deployment
